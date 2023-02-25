@@ -10,14 +10,12 @@ using System.Threading.Tasks;
 
 namespace Api.Services
 {
-    internal interface IServiceBase<TItem>
+    public interface IServiceBase<TItem>
         where TItem : IIdentifiable
     {
         Task<bool> CheckExistsAsync(string ownerId, Guid id);
 
         Task<int> CountAsync(string ownerId);
-
-        Task<Guid> CreateAsync(string ownerId, TItem item);
 
         Task<int> CreateAsync(string ownerId, IEnumerable<TItem> items);
 
@@ -26,6 +24,8 @@ namespace Api.Services
         IAsyncEnumerable<TItem> GetAllAsync(string ownerId);
 
         Task<TItem> GetAsync(string ownerId, Guid id);
+
+        Task<Guid?> UpsertAsync(string ownerId, TItem item);
     }
 
     internal abstract class ServiceBase<TItem> : IServiceBase<TItem>
@@ -237,13 +237,13 @@ namespace Api.Services
             }
         }
 
-        public virtual async Task<bool> UpdateAsync(string ownerId, TItem item)
+        public virtual async Task<Guid?> UpsertAsync(string ownerId, TItem item)
         {
             if (string.IsNullOrEmpty(ownerId))
                 throw new ArgumentException($"'{nameof(ownerId)}' cannot be null or empty.", nameof(ownerId));
 
             if (item.UserId != ownerId)
-                return false;
+                return null;
 
             _logger.LogInformation("Getting Item : {ItemName}, {ItemId}", typeof(TItem).Name, item.Id);
 
@@ -257,15 +257,15 @@ namespace Api.Services
                 if (belongsToUser)
                 {
                     await _container.UpsertItemAsync(item, _partitionKey.Value);
-                    return true;
+                    return item.Id;
                 }
 
-                return false;
+                return null;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
-                _logger.LogDebug("Item Not Found : {ItemName}, {ItemId}", typeof(TItem).Name, item.Id);
-                return true;
+                await _container.UpsertItemAsync(item, _partitionKey.Value);
+                return item.Id;
             }
             catch (Exception ex)
             {
