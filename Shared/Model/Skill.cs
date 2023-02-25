@@ -1,6 +1,8 @@
-﻿namespace BlazorApp.Shared.Model
+﻿using BlazorApp.Shared.Interfaces;
+
+namespace BlazorApp.Shared.Model
 {
-    public class Skill
+    public class Skill : IIdentifiable
     {
         public string Category { get; set; } = "";
         public Guid Id { get; set; }

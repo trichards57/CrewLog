@@ -1,6 +1,8 @@
-﻿namespace BlazorApp.Shared.Model
+﻿using BlazorApp.Shared.Interfaces;
+
+namespace BlazorApp.Shared.Model
 {
-    public class Shift
+    public class Shift : IIdentifiable
     {
         public DateOnly Date { get; set; }
         public TimeOnly EndTime { get; set; }

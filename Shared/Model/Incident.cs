@@ -1,4 +1,6 @@
-﻿namespace BlazorApp.Shared.Model
+﻿using BlazorApp.Shared.Interfaces;
+
+namespace BlazorApp.Shared.Model
 {
     public enum AgeUnit
     {
@@ -8,7 +10,7 @@
         Days = 3,
     }
 
-    public class Incident
+    public class Incident : IIdentifiable
     {
         public int Age { get; set; }
         public AgeUnit AgeUnit { get; set; }

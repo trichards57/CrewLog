@@ -1,4 +1,6 @@
-﻿namespace BlazorApp.Shared.Model
+﻿using BlazorApp.Shared.Interfaces;
+
+namespace BlazorApp.Shared.Model
 {
     public enum RoleType
     {
@@ -9,7 +11,7 @@
         Other = 4
     }
 
-    public class Role
+    public class Role : IIdentifiable
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = "";

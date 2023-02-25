@@ -1,4 +1,6 @@
-﻿namespace BlazorApp.Shared.Model
+﻿using BlazorApp.Shared.Interfaces;
+
+namespace BlazorApp.Shared.Model
 {
     public enum ReflectionStatus
     {
@@ -9,7 +11,7 @@
         Finished = 4
     }
 
-    public class Reflection
+    public class Reflection : IIdentifiable
     {
         public string? Content { get; set; }
         public DateOnly Date { get; set; }
