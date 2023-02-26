@@ -1,5 +1,7 @@
+using Api.Helpers;
 using Api.Services;
 using BlazorApp.Shared.Model;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -16,11 +18,13 @@ namespace Api.Functions
     {
         private readonly IServiceBase<Incident> _incidentsService;
         private readonly ILogger _logger;
+        private readonly IServiceBase<Shift> _shiftsService;
 
-        public Incidents(ILoggerFactory loggerFactory, IServiceBase<Incident> incidentsService)
+        public Incidents(ILoggerFactory loggerFactory, IServiceBase<Incident> incidentsService, IServiceBase<Shift> shiftsService)
         {
             _logger = loggerFactory.CreateLogger<Incidents>();
             _incidentsService = incidentsService;
+            _shiftsService = shiftsService;
         }
 
         [FunctionName("DeleteIncident")]
@@ -77,14 +81,21 @@ namespace Api.Functions
 
             if (userIdClaim == null)
                 return new UnauthorizedResult();
+
             var userId = userIdClaim.Value;
 
-            var newItemString = await req.ReadAsStringAsync();
-            var newItem = System.Text.Json.JsonSerializer.Deserialize<Incident>(newItemString);
+            var newItem = await req.GetJsonBody<Incident, IncidentValidator>();
 
-            var id = await _incidentsService.UpsertAsync(userId, newItem);
+            if (!await _shiftsService.CheckExistsAsync(userId, newItem.Value.ShiftId))
+                newItem.Errors.Add(new ValidationFailure(nameof(newItem.Value.ShiftId), "Shift does not exist."));
+
+            if (!newItem.IsValid)
+                return newItem.ToBadRequest();
+
+            var id = await _incidentsService.UpsertAsync(userId, newItem.Value);
 
             if (id != null) return new OkObjectResult(await _incidentsService.GetAsync(userId, id.Value));
+
             return new BadRequestResult();
         }
     }

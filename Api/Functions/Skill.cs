@@ -1,3 +1,4 @@
+using Api.Helpers;
 using Api.Services;
 using BlazorApp.Shared.Model;
 using Microsoft.AspNetCore.Http;
@@ -14,8 +15,8 @@ namespace Api.Functions
 {
     public class Skills
     {
-        private readonly IServiceBase<Skill> _skillsService;
         private readonly ILogger _logger;
+        private readonly IServiceBase<Skill> _skillsService;
 
         public Skills(ILoggerFactory loggerFactory, IServiceBase<Skill> skillsService)
         {
@@ -77,14 +78,19 @@ namespace Api.Functions
 
             if (userIdClaim == null)
                 return new UnauthorizedResult();
+
             var userId = userIdClaim.Value;
 
             var newItemString = await req.ReadAsStringAsync();
-            var newItem = System.Text.Json.JsonSerializer.Deserialize<Skill>(newItemString);
+            var newItem = await req.GetJsonBody<Skill, SkillValidator>();
 
-            var id = await _skillsService.UpsertAsync(userId, newItem);
+            if (!newItem.IsValid)
+                return newItem.ToBadRequest();
+
+            var id = await _skillsService.UpsertAsync(userId, newItem.Value);
 
             if (id != null) return new OkObjectResult(await _skillsService.GetAsync(userId, id.Value));
+            
             return new BadRequestResult();
         }
     }

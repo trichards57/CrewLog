@@ -1,5 +1,7 @@
+using Api.Helpers;
 using Api.Services;
 using BlazorApp.Shared.Model;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -14,13 +16,17 @@ namespace Api.Functions
 {
     public class Reflections
     {
-        private readonly IServiceBase<Reflection> _reflectionsService;
+        private readonly IServiceBase<Incident> _incidentService;
         private readonly ILogger _logger;
+        private readonly IServiceBase<Reflection> _reflectionsService;
+        private readonly IServiceBase<Shift> _shiftService;
 
-        public Reflections(ILoggerFactory loggerFactory, IServiceBase<Reflection> reflectionsService)
+        public Reflections(ILoggerFactory loggerFactory, IServiceBase<Reflection> reflectionsService, IServiceBase<Shift> shiftService, IServiceBase<Incident> incidentService)
         {
             _logger = loggerFactory.CreateLogger<Reflections>();
             _reflectionsService = reflectionsService;
+            _shiftService = shiftService;
+            _incidentService = incidentService;
         }
 
         [FunctionName("DeleteReflection")]
@@ -77,14 +83,23 @@ namespace Api.Functions
 
             if (userIdClaim == null)
                 return new UnauthorizedResult();
+
             var userId = userIdClaim.Value;
 
-            var newItemString = await req.ReadAsStringAsync();
-            var newItem = System.Text.Json.JsonSerializer.Deserialize<Reflection>(newItemString);
+            var newItem = await req.GetJsonBody<Reflection, ReflectionValidator>();
 
-            var id = await _reflectionsService.UpsertAsync(userId, newItem);
+            if (newItem.Value.SourceShiftId.HasValue && !await _shiftService.CheckExistsAsync(userId, newItem.Value.SourceShiftId.Value))
+                newItem.Errors.Add(new ValidationFailure(nameof(newItem.Value.SourceShiftId), "Source shift does not exist."));
+            if (newItem.Value.SourceIncidentId.HasValue && !await _incidentService.CheckExistsAsync(userId, newItem.Value.SourceIncidentId.Value))
+                newItem.Errors.Add(new ValidationFailure(nameof(newItem.Value.SourceIncidentId), "Source incident does not exist."));
+
+            if (!newItem.IsValid)
+                return newItem.ToBadRequest();
+
+            var id = await _reflectionsService.UpsertAsync(userId, newItem.Value);
 
             if (id != null) return new OkObjectResult(await _reflectionsService.GetAsync(userId, id.Value));
+
             return new BadRequestResult();
         }
     }

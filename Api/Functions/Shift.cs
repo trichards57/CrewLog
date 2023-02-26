@@ -1,3 +1,4 @@
+using Api.Helpers;
 using Api.Services;
 using BlazorApp.Shared.Model;
 using Microsoft.AspNetCore.Http;
@@ -77,14 +78,19 @@ namespace Api.Functions
 
             if (userIdClaim == null)
                 return new UnauthorizedResult();
+
             var userId = userIdClaim.Value;
 
             var newItemString = await req.ReadAsStringAsync();
-            var newItem = System.Text.Json.JsonSerializer.Deserialize<Shift>(newItemString);
+            var newItem = await req.GetJsonBody<Shift, ShiftValidator>();
 
-            var id = await _shiftsService.UpsertAsync(userId, newItem);
+            if (!newItem.IsValid)
+                return newItem.ToBadRequest();
+
+            var id = await _shiftsService.UpsertAsync(userId, newItem.Value);
 
             if (id != null) return new OkObjectResult(await _shiftsService.GetAsync(userId, id.Value));
+            
             return new BadRequestResult();
         }
     }
