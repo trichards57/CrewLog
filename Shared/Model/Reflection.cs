@@ -1,4 +1,5 @@
 ﻿using BlazorApp.Shared.Interfaces;
+using FluentValidation;
 
 namespace BlazorApp.Shared.Model
 {
@@ -21,5 +22,15 @@ namespace BlazorApp.Shared.Model
         public ReflectionStatus Status { get; set; }
         public string Title { get; set; } = "";
         public string UserId { get; set; } = "";
+    }
+
+    public class ReflectionValidator : AbstractValidator<Reflection>
+    {
+        public ReflectionValidator()
+        {
+            RuleFor(x => x.Date).NotEmpty();
+            RuleFor(x => x.Status).IsInEnum();
+            RuleFor(x => x.Title).NotEmpty();
+        }
     }
 }

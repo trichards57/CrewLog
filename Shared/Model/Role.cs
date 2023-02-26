@@ -1,4 +1,5 @@
 ﻿using BlazorApp.Shared.Interfaces;
+using FluentValidation;
 
 namespace BlazorApp.Shared.Model
 {
@@ -17,5 +18,14 @@ namespace BlazorApp.Shared.Model
         public string Name { get; set; } = "";
         public RoleType Type { get; set; }
         public string UserId { get; set; } = "";
+    }
+
+    public class RoleValidator : AbstractValidator<Role>
+    {
+        public RoleValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.Type).IsInEnum();
+        }
     }
 }

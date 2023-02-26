@@ -1,4 +1,5 @@
 ﻿using BlazorApp.Shared.Interfaces;
+using FluentValidation;
 
 namespace BlazorApp.Shared.Model
 {
@@ -13,5 +14,17 @@ namespace BlazorApp.Shared.Model
         public TimeOnly StartTime { get; set; }
         public string? Topics { get; set; }
         public string UserId { get; set; } = "";
+    }
+
+    public class ShiftValidator : AbstractValidator<Shift>
+    {
+        public ShiftValidator()
+        {
+            RuleFor(x => x.Date).NotEmpty();
+            RuleFor(x => x.EndTime).NotEmpty();
+            RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.RoleId).NotEmpty();
+            RuleFor(x => x.StartTime).NotEmpty();
+        }
     }
 }

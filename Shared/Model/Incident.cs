@@ -1,4 +1,5 @@
 ﻿using BlazorApp.Shared.Interfaces;
+using FluentValidation;
 
 namespace BlazorApp.Shared.Model
 {
@@ -18,11 +19,22 @@ namespace BlazorApp.Shared.Model
         public string? Description { get; set; }
         public Guid Id { get; set; }
         public string? Notes { get; set; }
-        public IList<Guid> Reflections { get; set; } = new List<Guid>();
         public Guid ShiftId { get; set; }
         public IList<Guid> Skills { get; set; } = new List<Guid>();
         public int SortNumber { get; set; }
         public string Summary { get; set; } = "";
         public string UserId { get; set; } = "";
+    }
+
+    public class IncidentValidator: AbstractValidator<Incident>
+    {
+        public IncidentValidator()
+        {
+            RuleFor(x => x.Age).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.AgeUnit).IsInEnum();
+            RuleFor(x => x.ShiftId).NotEmpty();
+            RuleFor(x => x.SortNumber).GreaterThan(0);
+            RuleFor(x => x.Summary).NotEmpty();
+        }
     }
 }
