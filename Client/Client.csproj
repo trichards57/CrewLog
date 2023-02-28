@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="compilerconfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.14" PrivateAssets="all" />
@@ -19,6 +23,10 @@
 
   <ItemGroup>
     <Folder Include="Stores\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="compilerconfig.json" />
   </ItemGroup>
 
 </Project>
