@@ -8,10 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="compilerconfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="BlazorStrap" Version="5.1.100" />
+    <PackageReference Include="BlazorStrap.V5" Version="5.1.100" />
+    <PackageReference Include="Feather.Blazor" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.14" PrivateAssets="all" />
@@ -23,10 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Stores\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="compilerconfig.json" />
   </ItemGroup>
 
 </Project>

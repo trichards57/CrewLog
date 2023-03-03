@@ -69,6 +69,16 @@ module.exports = {
         }
       }
     }),
+      // Copy dist folder to wwwroot
+      new FileManagerPlugin({
+          events: {
+              onEnd: {
+                  copy: [
+                      { source: "./dist/", destination: "../wwwroot" }
+                  ]
+              }
+          }
+      }),
     // Ignore momentjs locales
     new Webpack.IgnorePlugin({
       resourceRegExp: /^\.\/locale$/,

@@ -343,3 +343,11 @@ healthchecksdb
 /test-results/
 /playwright-report/
 /playwright/.cache/
+/Client/wwwroot/css/light.css
+/Client/wwwroot/css/dark.css
+/Client/wwwroot/fonts
+/wwwroot/img/flags
+/wwwroot/img/avatars
+/wwwroot/img/photos
+/wwwroot/img/icons
+/Client/wwwroot/js

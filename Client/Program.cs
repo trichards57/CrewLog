@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlazorApp.Client;
 using Microsoft.AspNetCore.Components.Authorization;
 using BlazorApp.Client.Auth;
+using BlazorStrap;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -13,5 +14,6 @@ builder.Services
     .AddAuthorizationCore()
     .AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
+builder.Services.AddBlazorStrap();
 
 await builder.Build().RunAsync();

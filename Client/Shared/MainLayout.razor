@@ -1,18 +1,143 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-    <main>
-        <div class="top-row px-4">
-            <LoginComponent />
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<div class="wrapper">
+    <nav id="sidebar" class="@SideBarClass">
+        <div class="sidebar-content">
+            <NavLink class="sidebar-brand" href="/">
+                <span class="align-middle">CrewLog</span>
+            </NavLink>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-header">Portfolio</li>
+                <li class="sidebar-item">
+                    <NavLink class="sidebar-link" href="/">
+                        <Feather.Blazor.Icons.FeatherHome CssClass="align-middle" Size="14" />
+                        <span class="align-middle">Home</span>
+                    </NavLink>
+                </li>
+                <li class="sidebar-item">
+                    <NavLink class="sidebar-link" href="/shifts">
+                        <Feather.Blazor.Icons.FeatherCalendar CssClass="align-middle" Size="14" />
+                        <span class="align-middle">Shifts</span>
+                    </NavLink>
+                </li>
+                <li class="sidebar-item">
+                    <NavLink class="sidebar-link" href="/shifts/new">
+                        <Feather.Blazor.Icons.FeatherPlus CssClass="align-middle" Size="14" />
+                        <span class="align-middle">Add Shift</span>
+                    </NavLink>
+                </li>
+                <li class="sidebar-item">
+                    <NavLink class="sidebar-link" href="/reflections">
+                        <Feather.Blazor.Icons.FeatherFileText CssClass="align-middle" Size="14" />
+                        <span class="align-middle">Reflections</span>
+                    </NavLink>
+                </li>
+                <li class="sidebar-item">
+                    <NavLink class="sidebar-link" href="/skills">
+                        <Feather.Blazor.Icons.FeatherTool CssClass="align-middle" Size="14" />
+                        <span class="align-middle">Manage Skills</span>
+                    </NavLink>
+                </li>
+            </ul>
         </div>
+    </nav>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+    <div class="main">
+        <BSNavbar Expand="Size.ExtraSmall" class="navbar-bg">
+            <button type="button" @onclick="()=>ToggleSideBar()" class="sidebar-toggle js-sidebar-toggle border-0 bg-transparent">
+                <i class="hamburger align-self-center" />
+            </button>
+
+            <BSNav class="navbar-align">
+                <BSNavItem IsDropdown>
+                    <BSDropdown IsDiv IsStatic Class="dropdown-menu-bottom-end">
+                        <Toggler>
+                            <BSToggle IsNavLink id="nav-toggle" class="nav-icon">
+                                <Feather.Blazor.Icons.FeatherSettings Color="currentColor" CssClass="avatar img-fluid rounded me-1 d-inline-block d-sm-none" />
+                                <Feather.Blazor.Icons.FeatherUser Color="currentColor" CssClass="avatar img-fluid rounded me-1 d-none d-sm-inline-block" />
+                                <span class="avatar-title text-dark d-none d-sm-inline-block">
+                                    @_userName
+                                </span>
+                            </BSToggle>
+                        </Toggler>
+                        <Content>
+                            <BSDropdownItem Url="/manage">
+                                <Feather.Blazor.Icons.FeatherUser Color="currentColor" CssClass="align-middle me-1" Size="14" />
+                                Profile
+                            </BSDropdownItem>
+                            <BSDropdownItem Url="/settings">
+                                <Feather.Blazor.Icons.FeatherSettings Color="currentColor" CssClass="align-middle me-1" Size="14" />
+                                Settings
+                            </BSDropdownItem>
+                            <BSDropdownItem IsDivider />
+                            <BSDropdownItem Url="/auth/logout">
+                                <Feather.Blazor.Icons.FeatherLogOut Color="currentColor" CssClass="align-middle me-1" Size="14" />
+                                Sign Out
+                            </BSDropdownItem>
+                        </Content>
+                    </BSDropdown>
+                </BSNavItem>
+            </BSNav>
+        </BSNavbar>
+        <main class="content">@Body</main>
+        <footer class="footer">
+            <BSContainer fluid>
+                <BSRow Class="text-muted">
+                    <BSCol Class="col-sm">
+                        Copyright &copy; 2022 Tony Richards
+                    </BSCol>
+                    <BSCol Column="3" ColumnMedium="1">
+                        <BSLink class="text-muted" to="/privacy">
+                            Privacy
+                        </BSLink>
+                    </BSCol>
+                    <BSCol Column="1">
+                        <BSLink class="text-muted" to="/terms">
+                            Terms
+                        </BSLink>
+                    </BSCol>
+                </BSRow>
+            </BSContainer>
+        </footer>
+    </div>
+    @*<ToastContainer position="top-end" class="p-3">
+    <Toast show={showError}
+    onClose={() =>
+    setShowError(false)}
+    delay={3000}
+    autohide
+    >
+    <Toast.Header>
+    <AlertTriangle class="me-2" />
+    <strong class="me-auto">Error Speaking to Server</strong>
+    </Toast.Header>
+    <Toast.Body>
+    There was an error when talking to the server. You should try again,
+    or try refreshing the page.
+    </Toast.Body>
+    </Toast>
+    </ToastContainer>*@
 </div>
+
+@code {
+    private bool _sideBarOpen = false;
+    private string SideBarClass => "sidebar js-siderbar" + (_sideBarOpen ? " collapsed" : "");
+    private bool _loggedIn = false;
+    private string _userName = "";
+
+    protected async override Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _loggedIn = authState?.User?.Identity?.IsAuthenticated ?? false;
+        _userName = authState?.User?.Identity?.Name ?? "";
+    }
+
+    void ToggleSideBar()
+    {
+        _sideBarOpen = !_sideBarOpen;
+        StateHasChanged();
+    }
+}
