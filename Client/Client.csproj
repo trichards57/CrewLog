@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="BlazorStrap" Version="5.1.100" />
     <PackageReference Include="BlazorStrap.V5" Version="5.1.100" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="Feather.Blazor" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.14" />
@@ -18,10 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Stores\" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,13 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazorApp.Client.Messages;
+@using BlazorApp.Client.Stores;
+@using BlazorStrap;
+@using CommunityToolkit.Mvvm.Messaging;
+@inherits LayoutComponentBase
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IBlazorStrap BlazorStrap
+
+<BSToaster />
 
 <div class="wrapper">
     <nav id="sidebar" class="@SideBarClass">
@@ -103,23 +110,6 @@
             </BSContainer>
         </footer>
     </div>
-    @*<ToastContainer position="top-end" class="p-3">
-    <Toast show={showError}
-    onClose={() =>
-    setShowError(false)}
-    delay={3000}
-    autohide
-    >
-    <Toast.Header>
-    <AlertTriangle class="me-2" />
-    <strong class="me-auto">Error Speaking to Server</strong>
-    </Toast.Header>
-    <Toast.Body>
-    There was an error when talking to the server. You should try again,
-    or try refreshing the page.
-    </Toast.Body>
-    </Toast>
-    </ToastContainer>*@
 </div>
 
 @code {
@@ -130,9 +120,27 @@
 
     protected async override Task OnInitializedAsync()
     {
+        WeakReferenceMessenger.Default.Register<ServerErrorMessage>(this, (r, m) =>
+        {
+            (r as MainLayout)?.ShowServerError();
+        });
+
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         _loggedIn = authState?.User?.Identity?.IsAuthenticated ?? false;
         _userName = authState?.User?.Identity?.Name ?? "";
+    }
+
+    private void ShowServerError()
+    {
+        if (BlazorStrap.Toaster.Children.Any())
+            return;
+
+        BlazorStrap.Toaster.Add("Error Speaking to Server", "There was an error when talking to the server. You should try again, or try refreshing the page.", o =>
+        {
+            o.Color = BSColor.Danger;
+            o.CloseAfter = 3000;
+            o.Toast = Toast.TopCenter;
+        });
     }
 
     void ToggleSideBar()
