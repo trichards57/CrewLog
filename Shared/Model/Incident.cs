@@ -11,7 +11,7 @@ namespace BlazorApp.Shared.Model
         Days = 3,
     }
 
-    public class Incident : IIdentifiable
+    public class Incident : IShiftIdentifiable
     {
         public int Age { get; set; }
         public AgeUnit AgeUnit { get; set; }

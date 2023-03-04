@@ -7,4 +7,11 @@ namespace BlazorApp.Shared.Interfaces
         Guid Id { get; set; }
         string UserId { get; set; }
     }
+
+    public interface IShiftIdentifiable : IIdentifiable
+    {
+
+        Guid ShiftId { get; set; }
+    }
+
 }
