@@ -1,7 +1,7 @@
-﻿using BlazorApp.Client.Services.Interfaces;
-using BlazorApp.Shared.Model;
+﻿using CrewLog.Client.Services.Interfaces;
+using CrewLog.Shared.Model;
 
-namespace BlazorApp.Client.Stores
+namespace CrewLog.Client.Stores
 {
     public class IncidentStore : CoreSubItemStore<Incident>
     {

@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 
-namespace BlazorApp.Client.Auth
+namespace CrewLog.Client.Auth
 {
     public class AuthStateProvider : AuthenticationStateProvider
     {

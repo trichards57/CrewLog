@@ -1,6 +1,6 @@
-using Api.Helpers;
-using Api.Services;
-using BlazorApp.Shared.Model;
+using CrewLog.Api.Helpers;
+using CrewLog.Api.Services;
+using CrewLog.Shared.Model;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Api.Functions
+namespace CrewLog.Api.Functions
 {
     public class Incidents
     {

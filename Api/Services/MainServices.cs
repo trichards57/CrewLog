@@ -1,9 +1,9 @@
-﻿using Api.Helpers;
-using BlazorApp.Shared.Model;
+﻿using CrewLog.Api.Helpers;
+using CrewLog.Shared.Model;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 
-namespace Api.Services
+namespace CrewLog.Api.Services
 {
     internal class IncidentService : ServiceBase<Incident>
     {

@@ -5,10 +5,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Api.Helpers
+namespace CrewLog.Api.Helpers
 {
     internal static class RequestExtensions
     {

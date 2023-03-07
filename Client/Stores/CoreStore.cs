@@ -1,9 +1,9 @@
-﻿using BlazorApp.Client.Services.Interfaces;
-using BlazorApp.Shared.Interfaces;
+﻿using CrewLog.Client.Services.Interfaces;
+using CrewLog.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.ComponentModel;
 
-namespace BlazorApp.Client.Stores
+namespace CrewLog.Client.Stores
 {
     public interface IStore<TItem> : INotifyPropertyChanged
     {

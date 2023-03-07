@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlazorApp.Shared.Interfaces
+namespace CrewLog.Shared.Interfaces
 {
     public interface IIdentifiable
     {

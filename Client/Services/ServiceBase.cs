@@ -1,7 +1,7 @@
-﻿using BlazorApp.Client.Services.Interfaces;
-using BlazorApp.Shared.Interfaces;
+﻿using CrewLog.Client.Services.Interfaces;
+using CrewLog.Shared.Interfaces;
 
-namespace BlazorApp.Client.Services
+namespace CrewLog.Client.Services
 {
     public class ServiceBase<TItem> : IServiceBase<TItem>
         where TItem : IIdentifiable

@@ -1,6 +1,6 @@
-﻿using BlazorApp.Shared.Model;
+﻿using CrewLog.Shared.Model;
 
-namespace BlazorApp.Client.Services
+namespace CrewLog.Client.Services
 {
     public class IncidentService : ServiceBase<Incident>
     {

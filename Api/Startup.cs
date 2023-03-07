@@ -1,16 +1,15 @@
-﻿using Api;
-using Api.Helpers;
-using Api.Services;
-using BlazorApp.Shared.Model;
+﻿using CrewLog.Api;
+using CrewLog.Api.Helpers;
+using CrewLog.Api.Services;
+using CrewLog.Shared.Model;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 
-namespace Api
+namespace CrewLog.Api
 {
     public class Startup : FunctionsStartup
     {

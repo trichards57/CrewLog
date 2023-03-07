@@ -1,4 +1,4 @@
-﻿namespace BlazorApp.Shared.Model
+﻿namespace CrewLog.Shared.Model
 {
     public readonly record struct HoursSummary
     {

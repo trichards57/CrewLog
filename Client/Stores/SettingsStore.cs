@@ -1,4 +1,4 @@
-﻿namespace BlazorApp.Client.Stores
+﻿namespace CrewLog.Client.Stores
 {
     public interface ISettingsStore
     { }

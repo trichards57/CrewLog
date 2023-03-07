@@ -1,4 +1,4 @@
-﻿using BlazorApp.Shared.Interfaces;
+﻿using CrewLog.Shared.Interfaces;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Api.Services
+namespace CrewLog.Api.Services
 {
     public interface IServiceBase<TItem>
         where TItem : IIdentifiable

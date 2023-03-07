@@ -1,7 +1,7 @@
-﻿using BlazorApp.Shared.Interfaces;
+﻿using CrewLog.Shared.Interfaces;
 using FluentValidation;
 
-namespace BlazorApp.Shared.Model
+namespace CrewLog.Shared.Model
 {
     public enum ReflectionStatus
     {

@@ -1,13 +1,13 @@
+using BlazorStrap;
+using CrewLog.Client;
+using CrewLog.Client.Auth;
+using CrewLog.Client.Services;
+using CrewLog.Client.Services.Interfaces;
+using CrewLog.Client.Stores;
+using CrewLog.Shared.Model;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using BlazorApp.Client;
-using Microsoft.AspNetCore.Components.Authorization;
-using BlazorApp.Client.Auth;
-using BlazorStrap;
-using BlazorApp.Client.Stores;
-using BlazorApp.Client.Services.Interfaces;
-using BlazorApp.Shared.Model;
-using BlazorApp.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

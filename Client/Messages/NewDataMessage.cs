@@ -1,4 +1,4 @@
-﻿namespace BlazorApp.Client.Messages
+﻿namespace CrewLog.Client.Messages
 {
     public enum NewDataItem
     {
@@ -8,7 +8,6 @@
         Role,
         Skill
     }
-
 
     public class NewDataMessage
     {

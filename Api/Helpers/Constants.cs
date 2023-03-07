@@ -1,4 +1,4 @@
-﻿namespace Api.Helpers
+﻿namespace CrewLog.Api.Helpers
 {
     internal static class Constants
     {
