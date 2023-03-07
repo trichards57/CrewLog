@@ -1,0 +1,88 @@
+﻿@page "/shifts/{id:guid}"
+
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Shift> ShiftStore
+@inject NavigationManager NavigationManager
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Delete Shift</h1>
+    <BSCard CardType="BlazorStrap.CardType.Card">
+        <BSCard CardType="BlazorStrap.CardType.Body">
+            @if (!ShiftStore.IsLoadingItem(Id) && Item != null)
+            {
+                <BSCard CardType="BlazorStrap.CardType.Text">
+                    Are you sure you want to delete this shift?
+                </BSCard>
+                <dl>
+                    <dt>Shift</dt>
+                    <dd>@Item.Name</dd>
+                </dl>
+            }
+            else if (ShiftStore.IsLoadingItem(Id) || Item == null)
+            {
+                <BSCard CardType="BlazorStrap.CardType.Text">
+                    On moment please...
+                </BSCard>
+            }
+            <BSRow>
+                <BSCol>
+                    <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Danger" IsSubmit="true" Class="w-100" IsDisabled="@(ShiftStore.IsLoading || _isRunning)" OnClick="OnDelete">
+                        Yes
+                    </BSButton>
+                </BSCol>
+                <BSCol>
+                    <BSButton IsLink="true" href="/shifts" role="button" Class="w-100" Size="Size.Large" Color="BlazorStrap.BSColor.Secondary" IsDisabled="@(ShiftStore.IsLoading || _isRunning)">
+                        No
+                    </BSButton>
+                </BSCol>
+            </BSRow>
+        </BSCard>
+    </BSCard>
+</BSContainer>
+
+
+@code {
+    private bool _isRunning;
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Shift? Item
+    {
+        get
+        {
+            if (ShiftStore.Data.TryGetValue(Id, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Shift && m.Ids.Contains(Id))
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        ShiftStore.LoadItems(new[] { Id });
+        StateHasChanged();
+    }
+
+    private async void OnDelete()
+    {
+        _isRunning = true;
+        StateHasChanged();
+
+        await ShiftStore.Remove(Id);
+
+        NavigationManager.NavigateTo("/shifts");
+    }
+}
