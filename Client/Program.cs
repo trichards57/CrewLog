@@ -27,9 +27,12 @@ builder.Services
     .AddTransient<IServiceBase<Shift>, ShiftService>()
     .AddTransient<IServiceBase<Skill>, SkillService>()
     .AddSingleton<IStore<Incident>, IncidentStore>()
+    .AddSingleton<ISubItemStore<Incident>, IncidentStore>()
     .AddSingleton<IStore<Reflection>, ReflectionStore>()
     .AddSingleton<IStore<Role>, RoleStore>()
-    .AddSingleton<IStore<Shift>, ShiftStore>()
-    .AddSingleton<IStore<Skill>, SkillStore>();
+    .AddSingleton<IStore<Shift>>(s => s.GetRequiredService<IShiftStore>())
+    .AddSingleton<IShiftStore, ShiftStore>()
+    .AddSingleton<IStore<Skill>, SkillStore>()
+    .AddSingleton<ISettingsStore, SettingsStore>();
 
 await builder.Build().RunAsync();

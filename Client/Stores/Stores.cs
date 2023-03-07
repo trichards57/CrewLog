@@ -24,10 +24,21 @@ namespace BlazorApp.Client.Stores
         }
     }
 
-    public class ShiftStore : CoreStore<Shift>
+    public interface IShiftStore : IStore<Shift> 
+    {
+        HoursState GetHours(int year);
+    }
+
+
+    public class ShiftStore : CoreStore<Shift>, IShiftStore
     {
         public ShiftStore(IServiceBase<Shift> service) : base(service)
         {
+        }
+
+        public HoursState GetHours(int year)
+        {
+            return new HoursState();
         }
     }
 

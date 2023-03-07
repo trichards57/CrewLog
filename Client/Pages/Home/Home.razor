@@ -1,0 +1,63 @@
+﻿@page "/"
+
+@using BlazorApp.Client.Messages;
+@using BlazorApp.Client.Stores;
+@using BlazorApp.Shared.Model;
+@using CommunityToolkit.Mvvm.Messaging;
+
+@inject IShiftStore ShiftStore
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Hours</h1>
+    <BSRow Class="g-4">
+        <BSCol ColumnLarge="12" ColumnSmall="6">
+            <HomeCard Current="HoursState.Hours.Total" Planned="HoursState.Planned.Total" Target="HoursState.TargetHours" Title="Total" ShowProgress IsLoading="ShiftStore.IsLoading" />
+        </BSCol>
+        <BSCol Class="col-xl" ColumnLarge="12" ColumnSmall="6">
+            <HomeCard Current="HoursState.Hours.Primary" Planned="HoursState.Planned.Primary" Title="Primary" IsLoading="ShiftStore.IsLoading" />
+        </BSCol>
+        <BSCol Class="col-xl" ColumnSmall="4">
+            <HomeCard Current="HoursState.Hours.Secondary" Planned="HoursState.Planned.Secondary" Title="Secondary" IsLoading="ShiftStore.IsLoading" />
+        </BSCol>
+        <BSCol Class="col-xl" ColumnSmall="4">
+            <HomeCard Current="HoursState.Hours.Training" Planned="HoursState.Planned.Training" Title="Training" IsLoading="ShiftStore.IsLoading" />
+        </BSCol>
+        <BSCol Class="col-xl" ColumnSmall="4">
+            <HomeCard Current="HoursState.Hours.Other" Planned="HoursState.Planned.Other" Title="Other" IsLoading="ShiftStore.IsLoading" />
+        </BSCol>
+    </BSRow>
+    <h1 class="h3 my-3">Shifts</h1>
+    <BSRow>
+        <BSCol>
+            <BSCard CardType="BlazorStrap.CardType.Card">
+                <BSCard CardType="BlazorStrap.CardType.Header">
+                    <BSCard CardType="BlazorStrap.CardType.Title" class="mb-0 d-flex justify-content-between">
+                        Upcoming Shifts
+                        <BSButton IsLink href="/shifts/new" IsOutlined Color="BlazorStrap.BSColor.Secondary" title="Add Shift">
+                            <Feather.Blazor.Icons.FeatherPlus Size="20" Color="currentColor" />
+                        </BSButton>
+                        </BSCard>
+                        <BSCard CardType="BlazorStrap.CardType.Body">
+                        <ShiftTable UpcomingOnly />
+                    </BSCard>
+                </BSCard>
+            </BSCard>
+        </BSCol>
+    </BSRow>
+</BSContainer>
+
+@code
+{
+    private HoursState HoursState => ShiftStore.GetHours(DateTimeOffset.Now.Year);
+
+    protected async override Task OnInitializedAsync()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+        {
+            if (m.DataType == NewDataItem.Shift)
+                StateHasChanged();
+        });
+
+        await this.ShiftStore.LoadItems();
+    }
+}

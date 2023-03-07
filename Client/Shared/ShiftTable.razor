@@ -1,0 +1,125 @@
+﻿@using BlazorApp.Client.Messages;
+@using BlazorApp.Client.Stores;
+@using BlazorApp.Shared.Model;
+@using CommunityToolkit.Mvvm.Messaging;
+
+@inject IShiftStore ShiftStore
+@inject ISubItemStore<Incident> IncidentsStore
+@inject IStore<Role> RolesStore
+
+<BSTable>
+    <BSTHead>
+        <BSTR>
+            <BSTD>Date</BSTD>
+            <BSTD class="d-none d-sm-table-cell">Time</BSTD>
+            <BSTD>Name</BSTD>
+            @if (ShowIncidents)
+            {
+                <BSTD class="text-center d-none d-sm-table-cell">Incidents</BSTD>
+            }
+            <BSTD aria-label="actions" Class="d-none d-sm-table-cell" />
+        </BSTR>
+    </BSTHead>
+    <BSTBody>
+        @if (ShiftStore.IsLoading)
+        {
+            <BSTR>
+                <BSTD ColSpan="@ColumnCount.ToString()" Class="text-muted text-center">
+                    One moment please...
+                </BSTD>
+            </BSTR>
+        }
+        else if (!Shifts.Any())
+        {
+            <BSTR>
+                <BSTD ColSpan="@ColumnCount.ToString()" Class="text-muted text-center">
+                    No Shifts
+                </BSTD>
+            </BSTR>
+        }
+        else
+        {
+            @foreach (var s in Shifts)
+            {
+                var editLink = $"/shifts/{s.Id}/edit";
+                var deleteLink = $"/shifts/{s.Id}/delete";
+                var newIncidentLink = $"/incidents/new?shiftId={s.Id}";
+
+                <BSTR>
+                    <BSTD>@s.Date.ToString("dd MMM yy")</BSTD>
+                    <BSTD>@s.StartTime.ToString("HH:mm") - @s.EndTime.ToString("HH:mm")</BSTD>
+                    <BSTD><a href="/shifts/@s.Id">@s.Name <span class="d-none d-sm-inline">(@RoleToName(s.RoleId))</span> </a></BSTD>
+                    @if (ShowIncidents)
+                    {
+                        <BSTD class="text-center d-none d-sm-table-cell">@IncidentsStore.GetShiftItems(s.Id).Count()</BSTD>
+                    }
+                    <BSTD aria-label="actions" Class="d-none d-sm-table-cell">
+                        <BSButtonGroup>
+                            @if (ShowIncidents)
+                            {
+                                <BSButton IsLink href="@newIncidentLink">
+                                <Feather.Blazor.Icons.FeatherUserPlus Size="14" />
+                                </BSButton>
+                            }
+                            <BSButton IsLink href="@editLink">
+                            <Feather.Blazor.Icons.FeatherEdit Size="14" />
+                            </BSButton>
+                            <BSButton IsLink href="@deleteLink">
+                            <Feather.Blazor.Icons.FeatherTrash Size="14" />
+                            </BSButton>
+
+                            </BSButtonGroup>
+                            </BSTD>
+                            </BSTR>
+            }
+        }
+    </BSTBody>
+</BSTable>
+
+@code {
+    [Parameter]
+    public bool UpcomingOnly { get; set; }
+    [Parameter]
+    public bool ShowIncidents { get; set; }
+
+    private int ColumnCount => ShowIncidents ? 5 : 4;
+
+    private string RoleToName(Guid id)
+    {
+        if (RolesStore.Data.ContainsKey(id))
+            return RolesStore.Data[id].Name;
+        return "Other";
+    }
+
+    private IEnumerable<Shift> Shifts
+    {
+        get
+        {
+            IEnumerable<Shift> result = ShiftStore.Data.Values;
+            if (UpcomingOnly)
+                result = result.Where(s => s.Date >= DateOnly.FromDateTime(DateTime.Now));
+
+            result = result.OrderBy(s => s.Date);
+
+            if (UpcomingOnly)
+                result = result.Take(10);
+            else
+                result = result.Reverse();
+
+            return result;
+        }
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+        {
+            if (m.DataType is NewDataItem.Shift or NewDataItem.Role)
+                StateHasChanged();
+        });
+
+        await ShiftStore.LoadItems();
+        await RolesStore.LoadItems();
+        await IncidentsStore.LoadItems();
+    }
+}

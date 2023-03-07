@@ -1,0 +1,74 @@
+﻿<BSCard CardType="BlazorStrap.CardType.Card" Class="h-100">
+    <BSCard CardType="BlazorStrap.CardType.Header">
+        <BSCard CardType="BlazorStrap.CardType.Title">
+            @Title
+        </BSCard>
+    </BSCard>
+    <BSCard CardType="BlazorStrap.CardType.Body">
+        @if (IsLoading)
+        {
+            <BSCard CardType="BlazorStrap.CardType.Text" Class="placeholder-glow display-6 text-center w-100">
+                <div class="placeholder w-50" />
+            </BSCard>
+            <BSCard CardType="BlazorStrap.CardType.Text" Class="placeholder-glow text-center w-100">
+                <div class="placeholder w-50" />
+            </BSCard>
+            @if (ShowProgress)
+            {
+                <div className="placeholder-glow mt-1 mb-0 w-100">
+                    <div class="placeholder w-100" />
+                </div>
+            }
+        }
+        else
+        {
+            <BSCard CardType="BlazorStrap.CardType.Text" Class="display-6 text-center">
+                @if (Target == null)
+                {
+                    @Current
+                }
+                else
+                {
+                    @($"{Current}/{Target}")
+                }
+                Hours
+            </BSCard>
+            <BSCard CardType="BlazorStrap.CardType.Text" Class="text-center">
+                @if (Target == null)
+                {
+                    @Planned
+                }
+                else
+                {
+                    @($"{Planned}/{Target}")
+                }
+                Hours Planned
+            </BSCard>
+            @if (ShowProgress)
+            {
+                <BSProgress Class="mt-2 mb-0 w-100">
+                    <BSProgressBar Value="ProgressToTarget" Max="Target??100" title="Total Hours" />
+                    <BSProgressBar Color="BlazorStrap.BSColor.Info" Value="PlannedProgressToTarget" Max=" Target??100" title="Planned Hours" />
+                </BSProgress>
+            }
+        }
+    </BSCard>
+</BSCard>
+
+@code {
+    [Parameter]
+    public int Current { get; set; }
+    [Parameter]
+    public int Planned { get; set; }
+    [Parameter]
+    public int? Target { get; set; }
+    [Parameter]
+    public string Title { get; set; } = "";
+    [Parameter]
+    public bool ShowProgress { get; set; }
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    private int ProgressToTarget => Math.Min(Current, Target ?? 0);
+    private int PlannedProgressToTarget => Math.Min(Planned, Target ?? 0) - ProgressToTarget;
+}

@@ -6,7 +6,21 @@ using System.ComponentModel;
 namespace BlazorApp.Client.Stores
 {
     public interface IStore<TItem> : INotifyPropertyChanged
-    { }
+    {
+        bool IsLoading { get; set; }
+        Dictionary<Guid, TItem> Data { get; }
+
+        Task Add(TItem create, CancellationToken cancellationToken = default);
+        bool IsLoadingItem(Guid id);
+        Task LoadItems(IEnumerable<Guid>? ids = null, bool force = false, CancellationToken cancellationToken = default);
+        Task Put(TItem item, CancellationToken cancellationToken = default);
+        Task Remove(Guid id, CancellationToken cancellationToken = default);
+    }
+
+    public interface ISubItemStore<TItem> : IStore<TItem>
+    {
+        IEnumerable<TItem> GetShiftItems(Guid id);
+    }
 
     public abstract class CoreStore<TItem> : ObservableObject, IStore<TItem>
         where TItem : IIdentifiable
@@ -24,7 +38,7 @@ namespace BlazorApp.Client.Stores
         public bool IsLoading { get => _isLoading; set => SetProperty(ref _isLoading, value); }
         public bool IsLoadingItem(Guid id) => IsLoading;
 
-        public Task LoadItems(IEnumerable<Guid> ids, bool force, CancellationToken cancellationToken = default)
+        public Task LoadItems(IEnumerable<Guid>? ids = null, bool force = false, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -45,7 +59,7 @@ namespace BlazorApp.Client.Stores
         }
     }
 
-    public class CoreSubItemStore<TItem> : CoreStore<TItem>
+    public class CoreSubItemStore<TItem> : CoreStore<TItem>, ISubItemStore<TItem>
         where TItem : IShiftIdentifiable
     {
         public CoreSubItemStore(IServiceBase<TItem> service) : base(service)
