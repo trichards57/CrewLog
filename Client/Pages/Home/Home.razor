@@ -11,7 +11,7 @@
     <h1 class="h3 my-3">Hours</h1>
     <BSRow Class="g-4">
         <BSCol ColumnLarge="12" ColumnSmall="6">
-            <HomeCard Current="HoursState.Hours.Total" Planned="HoursState.Planned.Total" Target="HoursState.TargetHours" Title="Total" ShowProgress IsLoading="ShiftStore.IsLoading" />
+            <HomeCard Current="HoursState.Hours.Total" Planned="HoursState.Planned.Total" Target="HoursState.TargetHours" Title="Total" ShowProgress="true" IsLoading="ShiftStore.IsLoading" />
         </BSCol>
         <BSCol Class="col-xl" ColumnLarge="12" ColumnSmall="6">
             <HomeCard Current="HoursState.Hours.Primary" Planned="HoursState.Planned.Primary" Title="Primary" IsLoading="ShiftStore.IsLoading" />
@@ -33,11 +33,11 @@
                 <BSCard CardType="BlazorStrap.CardType.Header">
                     <BSCard CardType="BlazorStrap.CardType.Title" class="mb-0 d-flex justify-content-between">
                         Upcoming Shifts
-                        <BSButton IsLink href="/shifts/new" IsOutlined Color="BlazorStrap.BSColor.Secondary" title="Add Shift">
+                        <BSButton IsLink="true" href="/shifts/new" IsOutlined="true" Color="BlazorStrap.BSColor.Secondary" title="Add Shift">
                             <Feather.Blazor.Icons.FeatherPlus Size="20" Color="currentColor" />
                         </BSButton>
-                        </BSCard>
-                        <BSCard CardType="BlazorStrap.CardType.Body">
+                    </BSCard>
+                    <BSCard CardType="BlazorStrap.CardType.Body">
                         <ShiftTable UpcomingOnly />
                     </BSCard>
                 </BSCard>
