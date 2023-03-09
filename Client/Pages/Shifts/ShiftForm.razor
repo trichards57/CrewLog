@@ -1,0 +1,19 @@
+﻿@using BlazorStrap.Extensions.FluentValidation
+@using CrewLog.Shared.Model;
+
+<BSForm OnValidSubmit="() => Submit.InvokeAsync(_shift)" Model="_shift">
+    <FluentValidator TValidator="ShiftValidator" />
+
+    <BSRow>
+        
+    </BSRow>
+</BSForm>
+
+@code {
+    private Shift _shift = new();
+
+    [Parameter]
+    public EventCallback<Shift> Submit { get; set; }
+
+    public bool IsDisabled { get; set; }
+}

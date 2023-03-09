@@ -1,0 +1,40 @@
+﻿@using CrewLog.Shared.Model;
+<BSCard CardType="BlazorStrap.CardType.Card">
+    <BSCard CardType="BlazorStrap.CardType.Header">
+        <BSCard CardType="BlazorStrap.CardType.Title">Shift Details</BSCard>
+    </BSCard>
+    <BSCard CardType="BlazorStrap.CardType.Body">
+        <div class="card-text placeholder-glow w-100">
+            <strong>Name:</strong> @Shift?.Name
+        </div>
+        <div class="card-text placeholder-glow w-100">
+            <strong>Date:</strong> @Shift?.Date.ToString("dd MMM yy") @Shift?.StartTime - @Shift?.EndTime
+        </div>
+        <div class="card-text placeholder-glow w-100">
+            <strong>Name:</strong> @Role?.Name
+        </div>
+        <BSRow>
+            <BSCol ColumnSmall="6">
+                <BSButton href="@EditLink" IsOutlined="true" Color="BlazorStrap.BSColor.Primary" class="mb-3 w-100">
+                    <Feather.Blazor.Icons.FeatherEdit Size="14" /> Update Shift
+                </BSButton>
+            </BSCol>
+            <BSCol ColumnSmall="6">
+                <BSButton href="@DeleteLink" IsOutlined="true" Color="BlazorStrap.BSColor.Danger" class="mb-3 w-100">
+                    <Feather.Blazor.Icons.FeatherTrash Size="14" /> Delete Shift
+                </BSButton>
+            </BSCol>
+        </BSRow>
+    </BSCard>
+</BSCard>
+
+@code {
+    [Parameter]
+    public Shift? Shift { get; set; } = default;
+
+    [Parameter]
+    public Role? Role { get; set; } = default;
+
+    private string EditLink => Shift == null ? "" : $"/shifts/${Shift.Id}/edit";
+    private string DeleteLink => Shift == null ? "" : $"/shifts/${Shift.Id}/delete";
+}

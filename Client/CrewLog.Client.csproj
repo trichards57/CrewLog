@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="BlazorStrap" Version="5.1.100" />
+    <PackageReference Include="BlazorStrap.Extensions.FluentValidation" Version="2.0.0" />
     <PackageReference Include="BlazorStrap.V5" Version="5.1.100" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="Feather.Blazor" Version="1.0.1" />

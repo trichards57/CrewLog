@@ -1,0 +1,81 @@
+﻿@page "/shifts/{id:guid}"
+
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Shift> ShiftStore
+@inject IStore<Role> RoleStore
+@inject ISubItemStore<Incident> IncidentStore
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Shift</h1>
+    <BSBreadcrumb>
+        <BSBreadcrumbItem Url="/shifts">Shifts</BSBreadcrumbItem>
+        <BSBreadcrumbItem IsActive="true">@Item?.Name</BSBreadcrumbItem>
+    </BSBreadcrumb>
+    <ShiftCard Shift="@Item" Role="@Role" />
+    @if (Role?.Type is RoleType.Training)
+    {
+        <TrainingCard Topics="@Item?.Topics" Notes="@Item?.Notes" />
+    }
+    else if (Role?.Type is RoleType.Primary or RoleType.Secondary or RoleType.Other)
+    {
+        <IncidentsCard Incidents="@Incidents" ShiftId="@Id" IsLoading="@IncidentStore.IsLoading" />
+    }
+</BSContainer>
+
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Shift? Item
+    {
+        get
+        {
+            if (ShiftStore.Data.TryGetValue(Id, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    private Role? Role
+    {
+        get
+        {
+            if (RoleStore.Data.TryGetValue(Id, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    private IEnumerable<Incident> Incidents
+    {
+        get
+        {
+            return IncidentStore.GetShiftItems(Id);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Shift && m.Ids.Contains(Id))
+                    StateHasChanged();
+                if (m.DataType is NewDataItem.Incident or NewDataItem.Role)
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        ShiftStore.LoadItems(new[] { Id });
+        IncidentStore.LoadItems();
+        RoleStore.LoadItems();
+
+        StateHasChanged();
+    }
+}

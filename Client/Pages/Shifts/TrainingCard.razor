@@ -1,0 +1,21 @@
+﻿@using CrewLog.Shared.Model;
+
+<BSCard CardType="BlazorStrap.CardType.Card">
+    <BSCard CardType="BlazorStrap.CardType.Header">
+        <BSCard CardType="BlazorStrap.CardType.Title" Class="mb-0">Training</BSCard>
+    </BSCard>
+    <BSCard CardType="BlazorStrap.CardType.Body">
+        <strong>Topics</strong>
+        <MarkdownOrNone value="@Topics" />
+        <strong>Notes</strong>
+        <MarkdownOrNone value="@Notes" />
+    </BSCard>
+</BSCard>
+
+@code {
+    [Parameter]
+    public string Notes { get; set; } = "";
+
+    [Parameter]
+    public string Topics { get; set; } = "";
+}

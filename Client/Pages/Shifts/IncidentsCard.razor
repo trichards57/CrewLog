@@ -1,0 +1,69 @@
+﻿@using CrewLog.Shared.Model;
+
+<BSCard CardType="BlazorStrap.CardType.Card">
+    <BSCard CardType="BlazorStrap.CardType.Header">
+        <BSCard CardType="BlazorStrap.CardType.Title" Class="mb-0">Incidents</BSCard>
+    </BSCard>
+    <BSCard CardType="BlazorStrap.CardType.Body">
+        <BSTable>
+            <BSTHead>
+                <BSTR>
+                    <BSTD aria-label="incident number" />
+                    <BSTD Class="d-none d-sm-table-cell">Age</BSTD>
+                    <BSTD Class="d-none d-sm-table-cell">Classification</BSTD>
+                    <BSTD>Summary</BSTD>
+                    <BSTD aria-label="actions" Class="d-none d-sm-table-cell" />
+                </BSTR>
+            </BSTHead>
+            <BSTBody>
+                @if (!Incidents.Any())
+                {
+                    <BSTR Class="text-center text-muted">
+                        <BSTD ColSpan="5">No Incidents</BSTD>
+                    </BSTR>
+                }
+                else
+                {
+                    @foreach (var i in Incidents)
+                    {
+                        var incidentLink = $"/incidents/${i.Id}";
+                        var editLink = $"{incidentLink}/edit";
+                        var deleteLink = $"{incidentLink}/de;ete";
+
+                        <BSTR>
+                            <BSTD>@i.SortNumber</BSTD>
+                            <BSTD class="d-none d-sm-table-cell">
+                                @i.Age @i.AgeUnit
+                            </BSTD>
+                            <BSTD class="d-none d-sm-table-cell">@i.Classification</BSTD>
+                            <BSTD>
+                                <a href="@incidentLink">@i.Summary</a>
+                            </BSTD>
+                            <BSTD class="d-none d-sm-table-cell">
+                                <BSButtonGroup>
+                                    <BSButton IsLink="true" Size="Size.Small" IsOutlined="true" Color="BlazorStrap.BSColor.Primary" href="@editLink" title="Edit Incident">
+                                        <Feather.Blazor.Icons.FeatherEdit size={14} />
+                                    </BSButton>
+                                    <BSButton IsLink="true" Size="Size.Small" IsOutlined="true" Color="BlazorStrap.BSColor.Danger" href="@deleteLink" title="Delete Incident">
+                                        <Feather.Blazor.Icons.FeatherTrash size={14} />
+                                    </BSButton>
+                                </BSButtonGroup>
+                            </BSTD>
+                        </BSTR>
+                    }
+                }
+            </BSTBody>
+        </BSTable>
+    </BSCard>
+</BSCard>
+
+@code {
+    [Parameter]
+    public IEnumerable<Incident> Incidents { get; set; } = Enumerable.Empty<Incident>();
+
+    [Parameter]
+    public Guid ShiftId { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+}
