@@ -19,7 +19,7 @@ namespace CrewLog.Client.Tests.Pages.Shifts
     public class DeleteShiftTests
     {
         private readonly Guid TestId = new("72965CE9-4793-4B48-B27F-603B7732F583");
-        private readonly Fixture Fixture = new Fixture();
+        private readonly Fixture Fixture = new();
 
         [Fact]
         public void RendersSuccessfully()
@@ -44,7 +44,7 @@ namespace CrewLog.Client.Tests.Pages.Shifts
             context.Services.AddSingleton(mockStore.Object);
             context.Services.AddBlazorStrap();
 
-            var component = context.RenderComponent<DeleteShift>(p =>
+            var component = context.RenderComponent<Delete>(p =>
                 p.Add(c => c.Id, TestId)
             );
 
