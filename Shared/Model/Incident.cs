@@ -11,7 +11,7 @@ namespace CrewLog.Shared.Model
         Days = 3,
     }
 
-    public class Incident : IShiftIdentifiable
+    public record struct Incident : IShiftIdentifiable
     {
         public int Age { get; set; }
         public AgeUnit AgeUnit { get; set; }
@@ -20,10 +20,10 @@ namespace CrewLog.Shared.Model
         public Guid Id { get; set; }
         public string? Notes { get; set; }
         public Guid ShiftId { get; set; }
-        public IList<Guid> Skills { get; set; } = new List<Guid>();
+        public IList<Guid> Skills { get; set; } 
         public int SortNumber { get; set; }
-        public string Summary { get; set; } = "";
-        public string UserId { get; set; } = "";
+        public string Summary { get; set; }
+        public string UserId { get; set; } 
     }
 
     public class IncidentValidator: AbstractValidator<Incident>

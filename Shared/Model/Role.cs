@@ -12,12 +12,12 @@ namespace CrewLog.Shared.Model
         Other = 4
     }
 
-    public class Role : IIdentifiable
+    public record struct Role : IIdentifiable
     {
         public Guid Id { get; set; }
-        public string Name { get; set; } = "";
+        public string Name { get; set; } 
         public RoleType Type { get; set; }
-        public string UserId { get; set; } = "";
+        public string UserId { get; set; } 
     }
 
     public class RoleValidator : AbstractValidator<Role>

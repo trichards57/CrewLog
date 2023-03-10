@@ -12,7 +12,7 @@ namespace CrewLog.Shared.Model
         Finished = 4
     }
 
-    public class Reflection : IIdentifiable
+    public record struct Reflection : IIdentifiable
     {
         public string? Content { get; set; }
         public DateOnly Date { get; set; }
@@ -20,8 +20,8 @@ namespace CrewLog.Shared.Model
         public Guid? SourceIncidentId { get; set; }
         public Guid? SourceShiftId { get; set; }
         public ReflectionStatus Status { get; set; }
-        public string Title { get; set; } = "";
-        public string UserId { get; set; } = "";
+        public string Title { get; set; }
+        public string UserId { get; set; } 
     }
 
     public class ReflectionValidator : AbstractValidator<Reflection>
