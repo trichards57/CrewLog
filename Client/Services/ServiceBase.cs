@@ -11,7 +11,7 @@ namespace CrewLog.Client.Services
             return Task.FromResult<TItem?>(default);
         }
 
-        public Task<bool> DeleteAsync(string id, CancellationToken? cancellationToken = null)
+        public Task<bool> DeleteAsync(Guid id, CancellationToken? cancellationToken = null)
         {
             return Task.FromResult(false);
         }
@@ -21,7 +21,7 @@ namespace CrewLog.Client.Services
             return AsyncEnumerable.Empty<TItem>();
         }
 
-        public Task<TItem?> GetItemAsync(string id, CancellationToken? cancellationToken = null)
+        public Task<TItem?> GetItemAsync(Guid id, CancellationToken? cancellationToken = null)
         {
             return Task.FromResult<TItem?>(default);
         }
