@@ -61,7 +61,7 @@ namespace CrewLog.Api.Helpers
         /// <summary>
         /// The collection of validation errors.
         /// </summary>
-        public IList<ValidationFailure> Errors { get; init; }
+        public IList<ValidationFailure> Errors { get; init; } = new List<ValidationFailure>();
 
         /// <summary>
         /// Whether or not the deserialized value was found to be valid.
@@ -71,6 +71,6 @@ namespace CrewLog.Api.Helpers
         /// <summary>
         /// The deserialized value of the request.
         /// </summary>
-        public T Value { get; init; }
+        public T? Value { get; init; }
     }
 }

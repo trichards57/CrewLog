@@ -23,7 +23,7 @@ namespace CrewLog.Api.Services
 
         IAsyncEnumerable<TItem> GetAllAsync(string ownerId);
 
-        Task<TItem> GetAsync(string ownerId, Guid id);
+        Task<TItem?> GetAsync(string ownerId, Guid id);
 
         Task<Guid?> UpsertAsync(string ownerId, TItem item);
     }
@@ -209,7 +209,7 @@ namespace CrewLog.Api.Services
             }
         }
 
-        public virtual async Task<TItem> GetAsync(string ownerId, Guid id)
+        public virtual async Task<TItem?> GetAsync(string ownerId, Guid id)
         {
             if (string.IsNullOrEmpty(ownerId))
                 throw new ArgumentException($"'{nameof(ownerId)}' cannot be null or empty.", nameof(ownerId));
