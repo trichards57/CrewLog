@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\Shifts\Edit.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorStrap" Version="5.1.100" />
     <PackageReference Include="BlazorStrap.Extensions.FluentValidation" Version="2.0.0" />
     <PackageReference Include="BlazorStrap.V5" Version="5.1.100" />
@@ -20,6 +24,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\CrewLog.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Shifts\Edit.razor" />
   </ItemGroup>
 
 </Project>

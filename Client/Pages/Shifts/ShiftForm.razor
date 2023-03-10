@@ -1,19 +1,122 @@
 ﻿@using BlazorStrap.Extensions.FluentValidation
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
 @using CrewLog.Shared.Model;
+
+@inject IStore<Role> RoleStore
 
 <BSForm OnValidSubmit="() => Submit.InvokeAsync(_shift)" Model="_shift">
     <FluentValidator TValidator="ShiftValidator" />
 
+    <div class="mb-3">
+        <BSLabel>Date</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Date" IsDisabled="IsDisabled" @bind-Value="_shift.Date" />
+        <BSFeedback For="@(() => _shift.Date)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Start Time</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Time" IsDisabled="IsDisabled" @bind-Value="_shift.StartTime" />
+        <BSFeedback For="@(() => _shift.StartTime)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>End Time</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Time" IsDisabled="IsDisabled" @bind-Value="_shift.EndTime" />
+        <BSFeedback For="@(() => _shift.EndTime)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Name</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Text" IsDisabled="IsDisabled" @bind-Value="_shift.Name" />
+        <BSFeedback For="@(() => _shift.Name)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Name</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Select" IsDisabled="IsDisabled || RoleStore.IsLoading" @bind-Value="_shift.RoleId">
+            @if (RoleStore.IsLoading)
+            {
+                <option>One moment please...</option>
+            }
+            else
+            {
+                <option value="">Select a role...</option>
+                @foreach (var r in RoleStore.Data.Values.OrderBy(r => r.Name))
+                {
+                    <option value="@r.Id">@r.Name</option>
+                }
+            }
+        </BSInput>
+        <BSFeedback For="@(() => _shift.RoleId)" />
+    </div>
+    @if (SelectedRoleIsTraining)
+    {
+        <div class="mb-3">
+            <BSLabel>Name</BSLabel>
+            <BSInput InputType="BlazorStrap.InputType.TextArea" IsDisabled="IsDisabled" @bind-Value="_shift.Topics" />
+            <BSFeedback For="@(() => _shift.Topics)" />
+        </div>
+        <div class="mb-3">
+            <BSLabel>Name</BSLabel>
+            <BSInput InputType="BlazorStrap.InputType.TextArea" IsDisabled="IsDisabled" @bind-Value="_shift.Notes" />
+            <BSFeedback For="@(() => _shift.Notes)" />
+        </div>
+        <div className="text-muted mb-3">
+            You can use <a href="https://www.markdownguide.org/">Markdown</a> formatting for the description and notes.
+        </div>
+    }
     <BSRow>
-        
+        <BSCol Column="sm">
+            <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Primary" IsSubmit="true" Class="w-100" IsDisabled="IsDisabled">
+                Save
+            </BSButton>
+        </BSCol>
+        @if (IsNew)
+        {
+            <BSCol Column="sm">
+                <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Secondary" IsSubmit="true" Class="w-100" IsDisabled="IsDisabled">
+                    Save and Add Another
+                </BSButton>
+            </BSCol>
+        }
     </BSRow>
 </BSForm>
 
 @code {
     private Shift _shift = new();
 
+    private bool SelectedRoleIsTraining
+    {
+        get
+        {
+            if (RoleStore.Data.TryGetValue(_shift.RoleId, out var role))
+                return role.Type == RoleType.Training;
+            return false;
+        }
+    }
+
     [Parameter]
     public EventCallback<Shift> Submit { get; set; }
 
+    [Parameter]
     public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public bool IsNew { get; set; }
+
+    [Parameter]
+    public Shift? InitialModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Role)
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        _shift = InitialModel ?? new();
+    }
+
 }

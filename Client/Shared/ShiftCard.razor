@@ -35,6 +35,6 @@
     [Parameter]
     public Role? Role { get; set; } = default;
 
-    private string EditLink => Shift == null ? "" : $"/shifts/${Shift.Id}/edit";
-    private string DeleteLink => Shift == null ? "" : $"/shifts/${Shift.Id}/delete";
+    private string EditLink => Shift == null ? "" : $"/shifts/${Shift.Value.Id}/edit";
+    private string DeleteLink => Shift == null ? "" : $"/shifts/${Shift.Value.Id}/delete";
 }

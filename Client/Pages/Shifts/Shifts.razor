@@ -1,0 +1,27 @@
+﻿@page "/shifts"
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Shifts</h1>
+    <BSBreadcrumb>
+        <BSBreadcrumbItem IsActive="true">Shifts</BSBreadcrumbItem>
+    </BSBreadcrumb>
+    <BSRow Class="mt-3">
+        <BSCol>
+            <BSCard CardType="BlazorStrap.CardType.Card">
+                <BSCard CardType="BlazorStrap.CardType.Header">
+                    <BSCard CardType="BlazorStrap.CardType.Title" Class="mb-0 d-flex justify-content-between">
+                        Shifts
+                        <BSButton href="/shifts/new" IsOutlined="true" Color="BlazorStrap.BSColor.Secondary" title="Add Shift">
+                            <Feather.Blazor.Icons.FeatherPlus Size="20" Color="currentColor" />
+                        </BSButton>
+                    </BSCard>
+                </BSCard>
+                <BSCard CardType="BlazorStrap.CardType.Body">
+                    <ShiftTable ShowIncidents="true" />
+                </BSCard>
+            </BSCard>
+        </BSCol>
+    </BSRow>
+</BSContainer>
+
+

@@ -10,7 +10,7 @@ namespace CrewLog.Client.Stores
         bool IsLoading { get; set; }
         Dictionary<Guid, TItem> Data { get; }
 
-        Task Add(TItem create, CancellationToken cancellationToken = default);
+        Task<Guid> Add(TItem create, CancellationToken cancellationToken = default);
         bool IsLoadingItem(Guid id);
         Task LoadItems(IEnumerable<Guid>? ids = null, bool force = false, CancellationToken cancellationToken = default);
         Task Put(TItem item, CancellationToken cancellationToken = default);
@@ -48,9 +48,9 @@ namespace CrewLog.Client.Stores
             return Task.CompletedTask;
         }
 
-        public Task Add(TItem create, CancellationToken cancellationToken = default)
+        public Task<Guid> Add(TItem create, CancellationToken cancellationToken = default)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(Guid.Empty);
         }
 
         public Task Put(TItem item, CancellationToken cancellationToken = default)
