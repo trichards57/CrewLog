@@ -51,7 +51,7 @@ namespace CrewLog.Api.Functions
 
             var item = await _incidentsService.GetAsync(userId, id);
 
-            return item != null ? new OkObjectResult(item) : new NotFoundResult();
+            return item != default ? new OkObjectResult(item) : new NotFoundResult();
         }
 
         [FunctionName("GetAllIncidents")]
