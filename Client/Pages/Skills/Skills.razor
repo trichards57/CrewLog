@@ -1,0 +1,109 @@
+﻿@page "/skills"
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject ISkillStore SkillStore
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Skills</h1>
+    <BSBreadcrumb>
+        <BSBreadcrumbItem IsActive="true">Skills</BSBreadcrumbItem>
+    </BSBreadcrumb>
+    <BSRow Class="mt-3">
+        <BSCol>
+            <BSCard CardType="BlazorStrap.CardType.Card">
+                <BSCard CardType="BlazorStrap.CardType.Header">
+                    <BSCard CardType="BlazorStrap.CardType.Title" Class="mb-0 d-flex justify-content-between">
+                        Shifts
+                        <BSButton href="/shifts/new" IsOutlined="true" Color="BlazorStrap.BSColor.Secondary" title="Add Skill">
+                            <Feather.Blazor.Icons.FeatherPlus Size="20" Color="currentColor" />
+                        </BSButton>
+                    </BSCard>
+                </BSCard>
+                <BSCard CardType="BlazorStrap.CardType.Body">
+                    @if (SkillStore.IsLoading)
+                    {
+                        <BSCard CardType="BlazorStrap.CardType.Text">One moment please...</BSCard>
+                    }
+                    else
+                    {
+                        <BSTable IsResponsive="true">
+                            @if (SkillStore.Data.Any())
+                            {
+                                @foreach (var group in SkillStore.Data.Values.GroupBy(s => s.Category).OrderBy(s => s.Key))
+                                {
+                                    <BSTHead>
+                                        <BSTR>
+                                            <BSTD ColSpan="2">
+                                                @group.Key
+                                            </BSTD>
+                                        </BSTR>
+                                    </BSTHead>
+                                    <BSTBody>
+                                        @foreach (var s in group)
+                                        {
+                                            var editLink = $"/skills/${s.Id}/edit";
+                                            var deleteLink = $"/skills/${s.Id}/delete";
+
+                                            <BSTR>
+                                                <BSTD>@s.Name</BSTD>
+                                                <BSTD>
+                                                    <BSButtonGroup>
+                                                        <BSButton IsOutlined="true" Size="Size.Small" Color="BlazorStrap.BSColor.Primary" title="Edit Skill" IsLink="true" href="@editLink">
+                                                            <Feather.Blazor.Icons.FeatherEdit Size="14" />
+                                                        </BSButton>
+                                                        <BSButton IsOutlined="true" Size="Size.Small" Color="BlazorStrap.BSColor.Danger" title="Delete Skill" IsLink="true" href="@deleteLink">
+                                                            <Feather.Blazor.Icons.FeatherTrash Size="14" />
+                                                        </BSButton>
+                                                    </BSButtonGroup>
+                                                </BSTD>
+                                            </BSTR>
+                                        }
+                                    </BSTBody>
+                                }
+                            }
+                            else
+                            {
+                                <BSTBody>
+                                    <BSTR>
+                                        <BSTD>
+                                            <BSButton IsDisabled="_isRunning || SkillStore.IsLoading" Class="w-100" Color="BlazorStrap.BSColor.Secondary" OnClick="AddDefaultSkills">
+                                                Add Default Skills
+                                            </BSButton>
+                                        </BSTD>
+                                    </BSTR>
+                                </BSTBody>
+                            }
+                        </BSTable>
+                    }
+                </BSCard>
+            </BSCard>
+        </BSCol>
+    </BSRow>
+</BSContainer>
+
+@code {
+    private bool _isRunning;
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+        {
+            if (m.DataType is NewDataItem.Skill)
+                StateHasChanged();
+        });
+
+        SkillStore.LoadItems();
+    }
+
+    private async Task AddDefaultSkills()
+    {
+        _isRunning = true;
+        StateHasChanged();
+        await SkillStore.AddDefaultSkills();
+        _isRunning = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,65 @@
+﻿@using BlazorStrap.Extensions.FluentValidation
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+<BSForm OnValidSubmit="() => Submit.InvokeAsync(_skill)" Model="_skill">
+    <FluentValidator TValidator="SkillValidator" />
+
+    <div class="mb-3">
+        <BSLabel>Name</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Text" IsDisabled="IsDisabled" @bind-Value="_skill.Name" />
+        <BSFeedback For="@(() => _skill.Name)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Category</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Text" IsDisabled="IsDisabled" @bind-Value="_skill.Category" />
+        <BSFeedback For="@(() => _skill.Category)" />
+    </div>
+    <BSRow>
+        <BSCol Column="sm">
+            <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Primary" IsSubmit="true" Class="w-100" IsDisabled="IsDisabled">
+                Save
+            </BSButton>
+        </BSCol>
+        @if (IsNew)
+        {
+            <BSCol Column="sm">
+                <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Secondary" IsSubmit="true" Class="w-100" IsDisabled="IsDisabled">
+                    Save and Add Another
+                </BSButton>
+            </BSCol>
+        }
+    </BSRow>
+</BSForm>
+
+@code {
+    private Skill _skill = new();
+
+    [Parameter]
+    public EventCallback<Skill> Submit { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public bool IsNew { get; set; }
+
+    [Parameter]
+    public Skill? InitialModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Skill)
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        _skill = InitialModel ?? new();
+    }
+}

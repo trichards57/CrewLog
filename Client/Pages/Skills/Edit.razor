@@ -1,0 +1,59 @@
+﻿@page "/skills/{id:guid}/edit"
+
+@using BlazorStrap.V5;
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Skill> SkillStore
+@inject NavigationManager NavigationManager
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Edit Skill</h1>
+    <BSCard CardType="BlazorStrap.CardType.Card">
+        <BSCard CardType="BlazorStrap.CardType.Body">
+            <SkillForm InitialModel="Item" Submit="Save" IsDisabled="_isRunning || SkillStore.IsLoading" />
+        </BSCard>
+    </BSCard>
+</BSContainer>
+
+@code {
+    private bool _isRunning;
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Skill? Item
+    {
+        get
+        {
+            if (SkillStore.Data.TryGetValue(Id, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    private async Task Save(Skill item)
+    {
+        _isRunning = true;
+        StateHasChanged();
+        await SkillStore.Put(item);
+        NavigationManager.NavigateTo($"/skills/{Id}");
+    }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Skill && m.Ids.Contains(Id))
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        SkillStore.LoadItems(new[] { Id });
+        StateHasChanged();
+    }
+}

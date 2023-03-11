@@ -32,7 +32,8 @@ builder.Services
     .AddSingleton<IStore<Role>, RoleStore>()
     .AddSingleton<IStore<Shift>>(s => s.GetRequiredService<IShiftStore>())
     .AddSingleton<IShiftStore, ShiftStore>()
-    .AddSingleton<IStore<Skill>, SkillStore>()
+    .AddSingleton<IStore<Skill>>(s => s.GetRequiredService<ISkillStore>())
+    .AddSingleton<ISkillStore, SkillStore>()
     .AddSingleton<ISettingsStore, SettingsStore>();
 
 await builder.Build().RunAsync();

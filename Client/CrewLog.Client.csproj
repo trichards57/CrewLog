@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Content Remove="Pages\Shifts\Edit.razor" />
+    <Content Remove="Pages\Skills\Edit.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Pages\Skills\Edit.razor" />
     <None Include="Pages\Shifts\Edit.razor" />
   </ItemGroup>
 

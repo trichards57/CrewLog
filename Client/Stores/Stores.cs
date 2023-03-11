@@ -43,10 +43,21 @@ namespace CrewLog.Client.Stores
         }
     }
 
-    public class SkillStore : CoreStore<Skill>
+
+    public interface ISkillStore : IStore<Skill>
+    {
+        Task AddDefaultSkills();
+    }
+
+    public class SkillStore : CoreStore<Skill>, ISkillStore
     {
         public SkillStore(IServiceBase<Skill> service) : base(service, NewDataItem.Skill)
         {
+        }
+
+        public Task AddDefaultSkills()
+        {
+            throw new NotImplementedException();
         }
     }
 }

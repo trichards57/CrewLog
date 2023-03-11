@@ -1,0 +1,31 @@
+﻿@page "/skills/new"
+
+@using BlazorStrap.V5;
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Skill> SkillStore
+@inject NavigationManager NavigationManager
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Edit Skill</h1>
+    <BSCard CardType="BlazorStrap.CardType.Card">
+        <BSCard CardType="BlazorStrap.CardType.Body">
+            <SkillForm IsNew="true" Submit="Save" IsDisabled="_isRunning" />
+        </BSCard>
+    </BSCard>
+</BSContainer>
+
+@code {
+    private bool _isRunning;
+
+    private async Task Save(Skill item)
+    {
+        _isRunning = true;
+        StateHasChanged();
+        var id = await SkillStore.Add(item);
+        NavigationManager.NavigateTo($"/skills/{id}");
+    }
+}

@@ -110,7 +110,7 @@
         }
     }
 
-    protected async override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
         {
@@ -118,8 +118,8 @@
                 StateHasChanged();
         });
 
-        await ShiftStore.LoadItems();
-        await RolesStore.LoadItems();
-        await IncidentsStore.LoadItems();
+        ShiftStore.LoadItems();
+        RolesStore.LoadItems();
+        IncidentsStore.LoadItems();
     }
 }
