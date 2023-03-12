@@ -1,0 +1,59 @@
+﻿@page "/incidents/{id:guid}/edit"
+
+@using BlazorStrap.V5;
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Incident> IncidentStore
+@inject NavigationManager NavigationManager
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Edit Incident</h1>
+    <BSCard CardType="BlazorStrap.CardType.Card">
+        <BSCard CardType="BlazorStrap.CardType.Body">
+            <IncidentForm InitialModel="Item" Submit="Save" IsDisabled="_isRunning || Incidenttore.IsLoading" />
+        </BSCard>
+    </BSCard>
+</BSContainer>
+
+@code {
+    private bool _isRunning;
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Incident? Item
+    {
+        get
+        {
+            if (IncidentStore.Data.TryGetValue(Id, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    private async Task Save(Incident item)
+    {
+        _isRunning = true;
+        StateHasChanged();
+        await IncidentStore.Put(item);
+        NavigationManager.NavigateTo($"/incidents/{Id}");
+    }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Incident && m.Ids.Contains(Id))
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        IncidentStore.LoadItems(new[] { Id });
+        StateHasChanged();
+    }
+}

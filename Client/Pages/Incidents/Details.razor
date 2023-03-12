@@ -1,0 +1,137 @@
+﻿@page "/incidents/{id:guid}"
+
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Skill> SkillStore
+@inject IStore<Shift> ShiftStore
+@inject IStore<Role> RoleStore
+@inject ISubItemStore<Incident> IncidentStore
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Shift</h1>
+    <BSBreadcrumb>
+        <BSBreadcrumbItem Url="/shifts">Shifts</BSBreadcrumbItem>
+        <BSBreadcrumbItem Url="@ShiftUrl">@Shift?.Name</BSBreadcrumbItem>
+        <BSBreadcrumbItem IsActive="true">Incident @Item?.SortNumber</BSBreadcrumbItem>
+    </BSBreadcrumb>
+    <ShiftCard Shift="@Shift" Role="@Role" />
+    <BSCard CardType="BlazorStrap.CardType.Card">
+        <BSCard CardType="BlazorStrap.CardType.Header">
+            <BSCard CardType="BlazorStrap.CardType.Title" Class="mb-0">Incident @Item?.SortNumber</BSCard>
+        </BSCard>
+        <BSCard CardType="BlazorStrap.CardType.Body">
+            <div class="card-text">
+                <strong>Classification:</strong> @Item?.Classification
+            </div>
+            <div class="card-text">
+                <strong>Age:</strong> @Item?.Age @Item?.AgeUnit
+            </div>
+            <div class="card-text">
+                <strong>Summary:</strong> @Item?.Summary
+            </div>
+            <strong>Description</strong>
+            <MarkdownOrNone Value="@Item?.Description" />
+            <strong>Notes</strong>
+            <MarkdownOrNone Value="@Item?.Notes" />
+            <strong>Skills</strong>
+            <div>
+                @if (!SkillStore.IsLoading && Item != null)
+                {
+                    @foreach (var s in Item.Value.Skills.Where(s => SkillStore.Data.ContainsKey(s)))
+                    {
+                        <BSBadge Class="m-1">
+                            @SkillStore.Data[s].Name
+                        </BSBadge>
+                    }
+                }
+            </div>
+            <BSRow>
+                <BSCol ColumnSmall="6">
+                    <BSButton href="@EditLink" IsOutlined="true" Color="BlazorStrap.BSColor.Primary" class="mb-3 w-100">
+                        <Feather.Blazor.Icons.FeatherEdit Size="14" /> Update Incident
+                    </BSButton>
+                </BSCol>
+                <BSCol ColumnSmall="6">
+                    <BSButton href="@DeleteLink" IsOutlined="true" Color="BlazorStrap.BSColor.Danger" class="mb-3 w-100">
+                        <Feather.Blazor.Icons.FeatherTrash Size="14" /> Delete Incident
+                    </BSButton>
+                </BSCol>
+            </BSRow>
+        </BSCard>
+    </BSCard>
+</BSContainer>
+
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Incident? Item
+    {
+        get
+        {
+            if (IncidentStore.Data.TryGetValue(Id, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    private string EditLink => Item == null ? "" : $"/incidents/${Item.Value.Id}/edit";
+    private string DeleteLink => Item == null ? "" : $"/incidents/${Item.Value.Id}/delete";
+
+    private Shift? Shift
+    {
+        get
+        {
+            var shiftId = Item?.ShiftId;
+
+            if (shiftId != null && ShiftStore.Data.TryGetValue(shiftId.Value, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    private Role? Role
+    {
+        get
+        {
+            var roleId = Shift?.RoleId;
+
+            if (roleId != null && RoleStore.Data.TryGetValue(roleId.Value, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    private string ShiftUrl => $"/shifts/${Shift?.Id}";
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Incident && m.Ids.Contains(Id))
+                    StateHasChanged();
+
+                var shiftId = Item?.ShiftId;
+                if (shiftId != null && m.DataType == NewDataItem.Shift && m.Ids.Contains(shiftId.Value))
+                    StateHasChanged();
+
+                if (m.DataType is NewDataItem.Role or NewDataItem.Skill)
+                    StateHasChanged();
+            });
+
+        SkillStore.LoadItems();
+    }
+
+    protected override void OnParametersSet()
+    {
+        ShiftStore.LoadItems(new[] { Id });
+        IncidentStore.LoadItems();
+        RoleStore.LoadItems();
+
+        StateHasChanged();
+    }
+}

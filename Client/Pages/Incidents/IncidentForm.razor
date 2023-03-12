@@ -1,0 +1,132 @@
+﻿@using BlazorStrap.Extensions.FluentValidation
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Skill> SkillStore
+
+<BSForm OnValidSubmit="() => Submit.InvokeAsync(_incident)" Model="_incident">
+    <FluentValidator TValidator="ShiftValidator" />
+
+    <div class="mb-3">
+        <BSLabel>Incident Number</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Number" IsDisabled="IsDisabled" @bind-Value="_incident.SortNumber" />
+        <BSFeedback For="@(() => _incident.SortNumber)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Age</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Time" IsDisabled="IsDisabled" @bind-Value="_incident.Age" />
+        <BSFeedback For="@(() => _incident.Age)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Age Units</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Select" IsDisabled="IsDisabled" @bind-Value="_incident.AgeUnit">
+            <option value="@AgeUnit.Years">Years</option>
+            <option value="@AgeUnit.Months">Months</option>
+            <option value="@AgeUnit.Days">Days</option>
+        </BSInput>
+        <BSFeedback For="@(() => _incident.AgeUnit)" />
+    </div>
+    <div className="text-muted mb-3">
+        <span className="fw-bold">Remember:</span> Do not include any
+        identifiable information like names, ethnicity or careers. This
+        includes details like CAD or PRF numbers.
+    </div>
+    <div class="mb-3">
+        <BSLabel>Summary</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Text" IsDisabled="IsDisabled" @bind-Value="_incident.Summary" />
+        <BSFeedback For="@(() => _incident.Summary)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Classification</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.Text" IsDisabled="IsDisabled" @bind-Value="_incident.Classification" />
+        <BSFeedback For="@(() => _incident.Classification)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Description</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.TextArea" IsDisabled="IsDisabled" @bind-Value="_incident.Description" />
+        <BSFeedback For="@(() => _incident.Description)" />
+    </div>
+    <div class="mb-3">
+        <BSLabel>Notes</BSLabel>
+        <BSInput InputType="BlazorStrap.InputType.TextArea" IsDisabled="IsDisabled" @bind-Value="_incident.Notes" />
+        <BSFeedback For="@(() => _incident.Notes)" />
+    </div>
+    <div className="text-muted mb-3">
+        You can use <a href="https://www.markdownguide.org/">Markdown</a>{" "}
+        formatting for the description and notes.
+    </div>
+    <b>Skills</b>
+
+    @if (!SkillStore.IsLoading)
+    {
+        <BSAccordion Class="mb-3">
+            @foreach (var group in SkillStore.Data.Values.GroupBy(s => s.Category).OrderBy(s => s.Key))
+            {
+                <BSAccordionItem>
+                    <Header>
+                        @group.Key
+                    </Header>
+                    <Content>
+                        <BSListGroup Class="m-0 p-0">
+                            @foreach (var item in group)
+                            {
+                                var itemActive = _incident.Skills.Contains(item.Id);
+
+                                <BSListGroupItem IsButton="true" Class="@(itemActive ? "active" : "")">@item.Name</BSListGroupItem>
+                            }
+                        </BSListGroup>
+                    </Content>
+                </BSAccordionItem>
+            }
+        </BSAccordion>
+    }
+
+    <BSRow>
+        <BSCol Column="sm">
+            <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Primary" IsSubmit="true" Class="w-100" IsDisabled="IsDisabled">
+                Save
+            </BSButton>
+        </BSCol>
+        @if (IsNew)
+        {
+            <BSCol Column="sm">
+                <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Secondary" IsSubmit="true" Class="w-100" IsDisabled="IsDisabled">
+                    Save and Add Another
+                </BSButton>
+            </BSCol>
+        }
+    </BSRow>
+</BSForm>
+
+@code {
+    private Incident _incident = new();
+
+    [Parameter]
+    public EventCallback<Incident> Submit { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public bool IsNew { get; set; }
+
+    [Parameter]
+    public Incident? InitialModel { get; set; }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Skill)
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        _incident = InitialModel ?? new();
+    }
+
+}

@@ -1,0 +1,31 @@
+﻿@page "/incidents/new"
+
+@using BlazorStrap.V5;
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Incident> IncidentStore
+@inject NavigationManager NavigationManager
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Edit Incident</h1>
+    <BSCard CardType="BlazorStrap.CardType.Card">
+        <BSCard CardType="BlazorStrap.CardType.Body">
+            <IncidentForm IsNew="true" Submit="Save" IsDisabled="_isRunning" />
+        </BSCard>
+    </BSCard>
+</BSContainer>
+
+@code {
+    private bool _isRunning;
+
+    private async Task Save(Incident item)
+    {
+        _isRunning = true;
+        StateHasChanged();
+        var id = await IncidentStore.Add(item);
+        NavigationManager.NavigateTo($"/incidents/{id}");
+    }
+}

@@ -45,7 +45,9 @@
     {
         get
         {
-            if (RoleStore.Data.TryGetValue(Id, out var item))
+            var roleId = Item?.RoleId;
+
+            if (roleId != null && RoleStore.Data.TryGetValue(roleId.Value, out var item))
                 return item;
             return null;
         }

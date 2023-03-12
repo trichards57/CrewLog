@@ -1,0 +1,97 @@
+﻿@page "/incidents/{id:guid}/delete"
+
+@using CommunityToolkit.Mvvm.Messaging;
+@using CrewLog.Client.Messages;
+@using CrewLog.Client.Stores;
+@using CrewLog.Shared.Model;
+
+@inject IStore<Incident> IncidentStore
+@inject NavigationManager NavigationManager
+
+<BSContainer Container="Container.Fluid">
+    <h1 class="h3 my-3">Delete Incident</h1>
+    <BSCard CardType="BlazorStrap.CardType.Card">
+        <BSCard CardType="BlazorStrap.CardType.Body">
+            @if (!IncidentStore.IsLoadingItem(Id) && Item != null)
+            {
+                <BSCard CardType="BlazorStrap.CardType.Text">
+                    Are you sure you want to delete this incident?
+                </BSCard>
+                <dl>
+                    <dt>Incident</dt>
+                    @if (string.IsNullOrWhiteSpace(Item.Value.Classification))
+                    {
+                        <dd>Incident @Item.Value.SortNumber - @Item.Value.Age @Item.Value.AgeUnit</dd>
+                    }
+                    else
+                    {
+                        <dd>Incident @Item.Value.SortNumber - @Item.Value.Classification - @Item.Value.Age @Item.Value.AgeUnit</dd>
+                    }
+                </dl>
+            }
+            else if (IncidentStore.IsLoadingItem(Id) || Item == null)
+            {
+                <BSCard CardType="BlazorStrap.CardType.Text">
+                    On moment please...
+                </BSCard>
+            }
+            <BSRow>
+                <BSCol>
+                    <BSButton Size="Size.Large" Color="BlazorStrap.BSColor.Danger" IsSubmit="true" Class="w-100" IsDisabled="@(IncidentStore.IsLoading || _isRunning)" OnClick="OnDelete">
+                        Yes
+                    </BSButton>
+                </BSCol>
+                <BSCol>
+                    <BSButton IsLink="true" href="@RejectUrl" role="button" Class="w-100" Size="Size.Large" Color="BlazorStrap.BSColor.Secondary" IsDisabled="@(IncidentStore.IsLoading || _isRunning)">
+                        No
+                    </BSButton>
+                </BSCol>
+            </BSRow>
+        </BSCard>
+    </BSCard>
+</BSContainer>
+
+
+@code {
+    private bool _isRunning;
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private string RejectUrl => $"/shifts/${Item?.ShiftId}";
+
+    private Incident? Item
+    {
+        get
+        {
+            if (IncidentStore.Data.TryGetValue(Id, out var item))
+                return item;
+            return null;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        WeakReferenceMessenger.Default.Register<NewDataMessage>(this, (r, m) =>
+            {
+                if (m.DataType == NewDataItem.Incident && m.Ids.Contains(Id))
+                    StateHasChanged();
+            });
+    }
+
+    protected override void OnParametersSet()
+    {
+        IncidentStore.LoadItems(new[] { Id });
+        StateHasChanged();
+    }
+
+    private async void OnDelete()
+    {
+        _isRunning = true;
+        StateHasChanged();
+
+        await IncidentStore.Remove(Id);
+
+        NavigationManager.NavigateTo(RejectUrl);
+    }
+}
