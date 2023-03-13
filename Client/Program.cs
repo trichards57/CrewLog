@@ -8,6 +8,7 @@ using CrewLog.Shared.Model;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Security.Claims;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -26,14 +27,14 @@ builder.Services
     .AddTransient<IServiceBase<Role>, RoleService>()
     .AddTransient<IServiceBase<Shift>, ShiftService>()
     .AddTransient<IServiceBase<Skill>, SkillService>()
-    .AddSingleton<IStore<Incident>, IncidentStore>()
-    .AddSingleton<ISubItemStore<Incident>, IncidentStore>()
-    .AddSingleton<IStore<Reflection>, ReflectionStore>()
-    .AddSingleton<IStore<Role>, RoleStore>()
-    .AddSingleton<IStore<Shift>>(s => s.GetRequiredService<IShiftStore>())
-    .AddSingleton<IShiftStore, ShiftStore>()
-    .AddSingleton<IStore<Skill>>(s => s.GetRequiredService<ISkillStore>())
-    .AddSingleton<ISkillStore, SkillStore>()
-    .AddSingleton<ISettingsStore, SettingsStore>();
+    .AddScoped<IStore<Incident>, IncidentStore>()
+    .AddScoped<ISubItemStore<Incident>, IncidentStore>()
+    .AddScoped<IStore<Reflection>, ReflectionStore>()
+    .AddScoped<IStore<Role>, RoleStore>()
+    .AddScoped<IStore<Shift>>(s => s.GetRequiredService<IShiftStore>())
+    .AddScoped<IShiftStore, ShiftStore>()
+    .AddScoped<IStore<Skill>>(s => s.GetRequiredService<ISkillStore>())
+    .AddScoped<ISkillStore, SkillStore>()
+    .AddScoped<ISettingsStore, SettingsStore>();
 
 await builder.Build().RunAsync();

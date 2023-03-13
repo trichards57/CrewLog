@@ -28,7 +28,7 @@ namespace CrewLog.Api.Functions
         public async Task<IActionResult> Delete(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "incidents/{id:guid}")] HttpRequest req, Guid id, ClaimsPrincipal claimsPrincipal)
         {
-            var userIdClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type== ClaimTypes.NameIdentifier);
+            var userIdClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
             if (userIdClaim == null)
                 return new UnauthorizedResult();
@@ -61,7 +61,10 @@ namespace CrewLog.Api.Functions
             var userIdClaim = claimsPrincipal.Claims.FirstOrDefault(c => c.Type== ClaimTypes.NameIdentifier);
 
             if (userIdClaim == null)
+            {
+                _logger.LogWarning("No User ID");
                 return new UnauthorizedResult();
+            }
 
             var userId = userIdClaim.Value;
 
